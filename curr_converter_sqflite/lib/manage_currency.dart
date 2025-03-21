@@ -61,7 +61,7 @@ class _CurrencyConverterMaterialPageState extends State<ManageCurrency> {
         centerTitle: true,
       ),
       body: StreamBuilder(
-        stream: Stream.periodic(const Duration(seconds: 0)),
+        stream: Stream.periodic(const Duration(seconds: 10)),
         builder: (context, snapshot) {
           return FutureBuilder<List<Map<String, dynamic>>>(
             future: dbRef!.getAllCurrencies(),

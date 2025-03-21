@@ -1,0 +1,5 @@
+{
+    "editor.formatOnSave": true,
+    "notebook.defaultFormatter": "Dart-Code.flutter",
+    "notebook.formatOnSave.enabled": true
+}
