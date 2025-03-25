@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:password_credentials_sqflite/data/local/db_helper.dart';
+import 'dart:io';
+import 'package:excel/excel.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:flutter/src/painting/text_span.dart' as textSpan;
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -36,6 +40,45 @@ class _MyHomePageState extends State<MyHomePage> {
     return '*' * password.length;
   }
 
+  Future<void> exportToExcel(List<Map<String, dynamic>> dataList) async {
+    var excel = Excel.createExcel();
+    Sheet sheet = excel['Sheet1'];
+
+    sheet
+        .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
+        .value = TextCellValue("TITLE");
+    sheet
+        .cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: 0))
+        .value = TextCellValue("USERID");
+    sheet
+        .cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 0))
+        .value = TextCellValue("PASSWORD");
+    // Append each value as a row
+    for (int i = 0; i < dataList.length; i++) {
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i + 1))
+          .value = TextCellValue(dataList[i][DBHelper.COLUMN_TITLE_NAME]);
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1))
+          .value = TextCellValue(dataList[i][DBHelper.COLUMN_USERNAME]);
+      sheet
+          .cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: i + 1))
+          .value = TextCellValue(dataList[i][DBHelper.COLUMN_PASSWORD]);
+    }
+
+    List<int>? fileBytes = excel.encode();
+    if (fileBytes != null) {
+      Directory directory = Directory('/storage/emulated/0/Download');
+      String filePath = '${directory.path}/password_credentials.xlsx';
+
+      File file = File(filePath);
+      await file.writeAsBytes(fileBytes);
+
+      print('Excel file saved at: $filePath');
+      await OpenFilex.open(filePath); // Open file
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,9 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Center(child: Text("Password Credential")),
         actions: [
           IconButton(
-            icon: const Icon(Icons.menu), // Change to any icon
+            icon: const Icon(Icons.share), // Change to any icon
             onPressed: () {
-              // Add functionality here
+              exportToExcel(allCredentials);
             },
           ),
         ],
@@ -143,6 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       titleController.text = '';
                                       userNameController.text = '';
                                       passwordController.text = '';
+                                      getCredentials();
                                       Navigator.pop(context);
                                     }
                                   },
@@ -396,6 +440,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                   .text = '';
                                                               passwordController
                                                                   .text = '';
+                                                              getCredentials();
                                                               Navigator.pop(
                                                                 context,
                                                               );
@@ -481,11 +526,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                               ),
                                             ),
                                             content: Text.rich(
-                                              TextSpan(
+                                              textSpan.TextSpan(
                                                 text:
                                                     'Are you sure you want to delete ',
                                                 children: [
-                                                  TextSpan(
+                                                  textSpan.TextSpan(
                                                     text:
                                                         '${credentials[index][DBHelper.COLUMN_TITLE_NAME]}',
                                                     style: const TextStyle(
@@ -493,12 +538,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                                           FontWeight.bold,
                                                     ),
                                                   ),
-                                                  const TextSpan(
+                                                  const textSpan.TextSpan(
                                                     text: ' Credential?',
                                                   ),
                                                 ],
                                               ),
                                             ),
+
                                             actions: <Widget>[
                                               TextButton(
                                                 onPressed:
