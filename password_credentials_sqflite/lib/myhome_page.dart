@@ -86,12 +86,46 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Center(child: Text("Password Credential")),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.share), // Change to any icon
-            onPressed: () {
-              exportToExcel(allCredentials);
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert), // Your icon here
+            onSelected: (value) {
+              if (value == "Export") {
+                exportToExcel(allCredentials);
+              }
+              if (value == "Import") {}
             },
+
+            offset: Offset(0, 45), // Adjust this value to position the dropdown
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: "Export",
+                    child: Row(
+                      children: [
+                        Text("Export"),
+                        SizedBox(width: 18), // Space between icon and text
+                        Icon(Icons.share),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: "Import",
+                    child: Row(
+                      children: [
+                        Text("Import"),
+                        SizedBox(width: 18), // Space between icon and text
+                        Icon(Icons.import_export),
+                      ],
+                    ),
+                  ),
+                ],
           ),
+          // IconButton(
+          //   icon: const Icon(Icons.share), //Icons.more_vert
+          //   onPressed: () {
+          //     exportToExcel(allCredentials);
+          //   },
+          // ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
