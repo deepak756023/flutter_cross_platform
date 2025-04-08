@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:practice/global.dart';
 import 'package:practice/pin_page.dart';
 
 class PinResetPage extends StatefulWidget {
@@ -233,8 +234,10 @@ class _PinResetPageState extends State<PinResetPage> {
       return;
     }
 
+    code = int.parse(pin);
+
     // If validation passes, navigate
-    Navigator.pushReplacement(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const PinPage()),
     );
