@@ -83,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Container(),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Center(child: Text("Password Credential")),
         actions: [
@@ -271,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
         future: dbRef?.getAllCredentials(),
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No credentials stored yet!"));
+            return const Center(child: Text(""));
           }
 
           List<Map<String, dynamic>> credentials = snapshot.data!;
