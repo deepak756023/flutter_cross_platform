@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:password_credentials_sqflite/authentication/auth_page.dart'
+    as authentication;
 import 'package:password_credentials_sqflite/data/local/db_helper.dart';
 import 'dart:io';
 import 'package:excel/excel.dart';
@@ -94,6 +96,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 exportToExcel(allCredentials);
               }
               if (value == "Import") {}
+              if (value == "Logout") {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => authentication.AuthPage(),
+                  ),
+                );
+              }
             },
 
             offset: Offset(0, 45), // Adjust this value to position the dropdown
@@ -104,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Row(
                       children: [
                         Text("Export"),
-                        SizedBox(width: 18), // Space between icon and text
+                        SizedBox(width: 15), // Space between icon and text
                         Icon(Icons.share),
                       ],
                     ),
@@ -114,8 +124,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Row(
                       children: [
                         Text("Import"),
-                        SizedBox(width: 18), // Space between icon and text
+                        SizedBox(width: 15), // Space between icon and text
                         Icon(Icons.import_export),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: "Logout",
+                    child: Row(
+                      children: [
+                        Text("Logout"),
+                        SizedBox(width: 15), // Space between icon and text
+                        Icon(Icons.logout),
                       ],
                     ),
                   ),
@@ -458,7 +478,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                     .isNotEmpty &&
                                                                 password
                                                                     .isNotEmpty) {
-                                                              dbRef!.updateCurrency(
+                                                              dbRef!.updateCredential(
                                                                 id:
                                                                     credentials[index][DBHelper
                                                                         .COLUMN_CREDENTIAL_ID],

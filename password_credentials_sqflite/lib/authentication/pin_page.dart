@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:password_credentials_sqflite/authentication/auth_page.dart';
 import 'package:password_credentials_sqflite/authentication/auth_service.dart';
-import 'package:password_credentials_sqflite/authentication/global.dart';
 import 'package:password_credentials_sqflite/authentication/pin_reset_page.dart';
+import 'package:password_credentials_sqflite/data/local/db_helper.dart';
 import 'package:password_credentials_sqflite/myhome_page.dart';
 
 class PinPage extends StatefulWidget {
@@ -14,6 +14,23 @@ class PinPage extends StatefulWidget {
 }
 
 class _PinPageState extends State<PinPage> {
+  String? authCode;
+  DBHelper? dbRef;
+
+  @override
+  void initState() {
+    super.initState();
+    dbRef = DBHelper.getInstance;
+    getCode();
+  }
+
+  Future<void> getCode() async {
+    if (dbRef != null) {
+      authCode = await dbRef!.getAuthCode();
+      print("Fetched Auth Code: $authCode");
+    }
+  }
+
   final List<TextEditingController> _controllers = List.generate(
     4,
     (_) => TextEditingController(),
@@ -209,8 +226,22 @@ class _PinPageState extends State<PinPage> {
     );
   }
 
-  void _getPinValue() {
+  void _getPinValue() async {
+    await getCode();
     String pin = _controllers.map((controller) => controller.text).join();
+    if (authCode!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please Set the PIN for First Time"),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+        ),
+      );
+      return;
+    }
 
     if (pin.length < 4) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -225,7 +256,7 @@ class _PinPageState extends State<PinPage> {
       );
       return;
     }
-    if (code != int.parse(pin)) {
+    if (authCode != pin) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Wrong Pin"),

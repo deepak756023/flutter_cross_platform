@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DBHelper{
+class DBHelper {
   DBHelper._();
   static final DBHelper getInstance = DBHelper._();
 
@@ -14,6 +14,9 @@ class DBHelper{
   static final String COLUMN_USERNAME = "userName";
   static final String COLUMN_PASSWORD = "password";
 
+  static final String CODE_TABLE = "Auth_Code";
+  static final String COLUMN_AUTH_CODE = "code";
+
   Database? myDB;
   // Open Database (Create if not exists)
   Future<Database> getDB() async {
@@ -23,7 +26,7 @@ class DBHelper{
 
   Future<Database> openDB() async {
     Directory appDir = await getApplicationDocumentsDirectory();
-    String dbPath = join(appDir.path, 'currencies.db');
+    String dbPath = join(appDir.path, 'credentials.db');
 
     return await openDatabase(
       dbPath,
@@ -37,8 +40,35 @@ class DBHelper{
             $COLUMN_PASSWORD TEXT
           )
         ''');
+
+        db.execute('''
+          CREATE TABLE $CODE_TABLE (
+            $COLUMN_AUTH_CODE TEXT
+        )
+      ''');
       },
     );
+  }
+
+  Future<void> saveAuthCode(String code) async {
+    final db = await getDB();
+    await db.delete(CODE_TABLE);
+    await db.insert(CODE_TABLE, {COLUMN_AUTH_CODE: code});
+    print(code);
+  }
+
+  Future<String?> getAuthCode() async {
+    final db = await getDB();
+    final List<Map<String, dynamic>> result = await db.query(CODE_TABLE);
+    if (result.isNotEmpty) {
+      return result.first[DBHelper.COLUMN_AUTH_CODE] as String;
+    }
+    return null;
+  }
+
+  Future<void> deleteAuthCode() async {
+    final db = await getDB();
+    await db.delete(CODE_TABLE);
   }
 
   //CRUD Operations
@@ -48,16 +78,15 @@ class DBHelper{
     required String mTitle,
     required String mUserName,
     required String mPassword,
-    }) async {
-      var db = await getDB();
-      int rowsEffected = await db.insert(TABLE, {
-        COLUMN_TITLE_NAME : mTitle,
-        COLUMN_USERNAME : mUserName,
-        COLUMN_PASSWORD : mPassword,
-
-      });
-      return rowsEffected > 0;
-    }
+  }) async {
+    var db = await getDB();
+    int rowsEffected = await db.insert(TABLE, {
+      COLUMN_TITLE_NAME: mTitle,
+      COLUMN_USERNAME: mUserName,
+      COLUMN_PASSWORD: mPassword,
+    });
+    return rowsEffected > 0;
+  }
 
   // Read(All)
   Future<List<Map<String, dynamic>>> getAllCredentials() async {
@@ -66,8 +95,8 @@ class DBHelper{
     return mData;
   }
 
-    // update
-  Future<bool> updateCurrency({
+  // update
+  Future<bool> updateCredential({
     required int id,
     required String mTitle,
     required String mUserName,
@@ -87,8 +116,7 @@ class DBHelper{
     return rowsEffected > 0;
   }
 
-
-   // delete
+  // delete
   Future<bool> deleteCredential({required int id}) async {
     var db = await getDB();
     int rowsEffected = await db.delete(
@@ -98,7 +126,4 @@ class DBHelper{
     );
     return rowsEffected > 0;
   }
-
-
 }
-
