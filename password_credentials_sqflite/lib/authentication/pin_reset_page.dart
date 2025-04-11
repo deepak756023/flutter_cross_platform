@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:password_credentials_sqflite/authentication/global.dart';
 import 'package:password_credentials_sqflite/authentication/pin_page.dart';
+import 'package:password_credentials_sqflite/data/local/db_helper.dart';
 
 class PinResetPage extends StatefulWidget {
   const PinResetPage({super.key});
@@ -11,9 +11,12 @@ class PinResetPage extends StatefulWidget {
 }
 
 class _PinResetPageState extends State<PinResetPage> {
+  DBHelper? dbRef;
+
   @override
   void initState() {
     super.initState();
+    dbRef = DBHelper.getInstance;
   }
 
   final List<TextEditingController> _controllers = List.generate(
@@ -234,12 +237,15 @@ class _PinResetPageState extends State<PinResetPage> {
       return;
     }
 
-    code = int.parse(pin);
+    // code = int.parse(pin);
+    dbRef?.saveAuthCode(pin);
 
     // If validation passes, navigate
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const PinPage()),
     );
+
+    setState(() {});
   }
 }
