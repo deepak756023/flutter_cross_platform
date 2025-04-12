@@ -16,6 +16,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   int? _visibleIndex;
   TextEditingController titleController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
@@ -40,6 +42,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String stars(String password) {
     return '*' * password.length;
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      var title = titleController.text;
+      var userName = userNameController.text;
+      var password = passwordController.text;
+      if (title.isNotEmpty && userName.isNotEmpty && password.isNotEmpty) {
+        dbRef!.addCredential(
+          mTitle: title,
+          mUserName: userName,
+          mPassword: password,
+        );
+        setState(() {});
+        titleController.text = '';
+        userNameController.text = '';
+        passwordController.text = '';
+        getCredentials();
+        Navigator.pop(context);
+      }
+    }
   }
 
   Future<void> exportToExcel(List<Map<String, dynamic>> dataList) async {
@@ -95,7 +118,28 @@ class _MyHomePageState extends State<MyHomePage> {
               if (value == "Export") {
                 exportToExcel(allCredentials);
               }
-              if (value == "Import") {}
+              if (value == "Import") {
+                showDialog<String>(
+                  context: context,
+                  builder:
+                      (BuildContext context) => AlertDialog(
+                        title: const Text(
+                          'Coming Soon!!!',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                        content: const Text(
+                          'This feature is yet to be developed. Stay tuned...',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, 'OK'),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                );
+              }
               if (value == "Logout") {
                 Navigator.pushReplacement(
                   context,
@@ -115,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         Text("Export"),
                         SizedBox(width: 15), // Space between icon and text
-                        Icon(Icons.share),
+                        Icon(Icons.arrow_circle_up),
                       ],
                     ),
                   ),
@@ -125,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         Text("Import"),
                         SizedBox(width: 15), // Space between icon and text
-                        Icon(Icons.import_export),
+                        Icon(Icons.arrow_circle_down),
                       ],
                     ),
                   ),
@@ -156,129 +200,142 @@ class _MyHomePageState extends State<MyHomePage> {
             builder: (BuildContext context) {
               return SizedBox(
                 height: 500,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      children: <Widget>[
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'Add Credential',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: TextField(
-                            controller: titleController,
-                            decoration: InputDecoration(
-                              hintText: "Enter title here",
-                              label: const Text('Title'),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(11),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(11),
+                child: Form(
+                  key: _formKey,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        children: <Widget>[
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'Add Credential',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: TextField(
-                            controller: userNameController,
-                            decoration: InputDecoration(
-                              hintText: "Enter username here",
-                              label: const Text('Username'),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(11),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: TextFormField(
+                              controller: titleController,
+                              decoration: InputDecoration(
+                                hintText: "Enter title here",
+                                labelText: 'Title',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(11),
+                                ),
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(11),
-                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter a Title';
+                                }
+                                return null;
+                              },
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: TextField(
-                            controller: passwordController,
-                            decoration: InputDecoration(
-                              hintText: "Enter password here",
-                              label: const Text('Password'),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(11),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: TextFormField(
+                              controller: userNameController,
+                              decoration: InputDecoration(
+                                hintText: "Enter title here",
+                                labelText: 'Title',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(11),
+                                ),
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(11),
-                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter a Title';
+                                }
+                                return null;
+                              },
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () {
-                                    var title = titleController.text;
-                                    var userName = userNameController.text;
-                                    var password = passwordController.text;
-                                    if (title.isNotEmpty &&
-                                        userName.isNotEmpty &&
-                                        password.isNotEmpty) {
-                                      dbRef!.addCredential(
-                                        mTitle: title,
-                                        mUserName: userName,
-                                        mPassword: password,
-                                      );
-                                      setState(() {});
-                                      titleController.text = '';
-                                      userNameController.text = '';
-                                      passwordController.text = '';
-                                      getCredentials();
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: TextFormField(
+                              controller: passwordController,
+                              decoration: InputDecoration(
+                                hintText: "Enter title here",
+                                labelText: 'Title',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(11),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter a Title';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: _submitForm,
+                                    //  () {
+                                    //   var title = titleController.text;
+                                    //   var userName = userNameController.text;
+                                    //   var password = passwordController.text;
+                                    //   if (title.isNotEmpty &&
+                                    //       userName.isNotEmpty &&
+                                    //       password.isNotEmpty) {
+                                    //     dbRef!.addCredential(
+                                    //       mTitle: title,
+                                    //       mUserName: userName,
+                                    //       mPassword: password,
+                                    //     );
+                                    //     setState(() {});
+                                    //     titleController.text = '';
+                                    //     userNameController.text = '';
+                                    //     passwordController.text = '';
+                                    //     getCredentials();
+                                    //     Navigator.pop(context);
+                                    //   }
+                                    // },
+                                    style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        side: const BorderSide(
+                                          width: 1.2,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    child: const Text("Add Credential"),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: () {
                                       Navigator.pop(context);
-                                    }
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      side: const BorderSide(
-                                        width: 1.2,
-                                        color: Colors.black,
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        side: const BorderSide(
+                                          width: 1.2,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ),
+                                    child: const Text("Cancel"),
                                   ),
-                                  child: const Text("Add Credential"),
                                 ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      side: const BorderSide(
-                                        width: 1.2,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                  child: const Text("Cancel"),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -314,155 +371,267 @@ class _MyHomePageState extends State<MyHomePage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              'TITLE: ${credentials[index][DBHelper.COLUMN_TITLE_NAME]}',
-                              style: const TextStyle(fontSize: 18),
+                        RichText(
+                          text: textSpan.TextSpan(
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
                             ),
+                            children: [
+                              const textSpan.TextSpan(
+                                text: 'TITLE: ',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              textSpan.TextSpan(
+                                text:
+                                    credentials[index][DBHelper
+                                        .COLUMN_TITLE_NAME],
+                              ),
+                            ],
+                          ),
+                        ),
 
-                            Container(
-                              padding: EdgeInsets.only(left: 100),
-                              child: IconButton(
-                                onPressed: () {
-                                  TextEditingController titleController =
-                                      TextEditingController(
-                                        text:
-                                            credentials[index][DBHelper
-                                                .COLUMN_TITLE_NAME],
-                                      );
-                                  TextEditingController userNameController =
-                                      TextEditingController(
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Row(
+                            children: [
+                              RichText(
+                                text: textSpan.TextSpan(
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.black,
+                                  ),
+                                  children: [
+                                    const textSpan.TextSpan(
+                                      text: 'USERNAME: ',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    textSpan.TextSpan(
+                                      text:
+                                          credentials[index][DBHelper
+                                              .COLUMN_USERNAME],
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              Tooltip(
+                                message: "Copy Username",
+                                child: IconButton(
+                                  onPressed: () async {
+                                    await Clipboard.setData(
+                                      ClipboardData(
                                         text:
                                             credentials[index][DBHelper
                                                 .COLUMN_USERNAME],
-                                      );
-                                  TextEditingController passwordController =
-                                      TextEditingController(
-                                        text:
-                                            credentials[index][DBHelper
-                                                .COLUMN_PASSWORD],
-                                      );
-                                  showModalBottomSheet<void>(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return SizedBox(
-                                        height: 500,
-                                        child: Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: Column(
-                                              children: <Widget>[
-                                                const Padding(
-                                                  padding: EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                    'Update Credential',
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
+                                      ),
+                                    );
+
+                                    // Show confirmation message
+                                    // ignore: use_build_context_synchronously
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: const Text(
+                                          "Username copied to clipboard!",
+                                        ),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.copy,
+                                    color: Colors.black,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Row(
+                          children: [
+                            RichText(
+                              text: textSpan.TextSpan(
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
+                                children: [
+                                  const textSpan.TextSpan(
+                                    text: 'PASSWORD: ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  textSpan.TextSpan(
+                                    text:
+                                        isVisible
+                                            ? credentials[index]["password"]
+                                            : stars(
+                                              credentials[index]["password"],
+                                            ),
+                                  ),
+                                ],
+                              ),
+                              overflow: TextOverflow.visible,
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                isVisible
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _visibleIndex = isVisible ? null : index;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      //mainAxisAlignment: MainAxisAlignment,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: IconButton(
+                            onPressed: () {
+                              TextEditingController titleController =
+                                  TextEditingController(
+                                    text:
+                                        credentials[index][DBHelper
+                                            .COLUMN_TITLE_NAME],
+                                  );
+                              TextEditingController userNameController =
+                                  TextEditingController(
+                                    text:
+                                        credentials[index][DBHelper
+                                            .COLUMN_USERNAME],
+                                  );
+                              TextEditingController passwordController =
+                                  TextEditingController(
+                                    text:
+                                        credentials[index][DBHelper
+                                            .COLUMN_PASSWORD],
+                                  );
+                              showModalBottomSheet<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SizedBox(
+                                    height: 500,
+                                    child: Form(
+                                      key: _formKey,
+                                      child: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: Column(
+                                            children: <Widget>[
+                                              const Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  'Update Credential',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                Padding(
-                                                  padding: const EdgeInsets.all(
-                                                    10.0,
-                                                  ),
-                                                  child: TextField(
-                                                    controller: titleController,
-                                                    decoration: InputDecoration(
-                                                      hintText:
-                                                          "Enter title here",
-                                                      label: const Text(
-                                                        'Title',
-                                                      ),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  11,
-                                                                ),
-                                                          ),
-                                                      enabledBorder:
-                                                          OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  11,
-                                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  10.0,
+                                                ),
+                                                child: TextFormField(
+                                                  controller: titleController,
+                                                  decoration: InputDecoration(
+                                                    hintText:
+                                                        "Enter title here",
+                                                    labelText: 'Title',
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            11,
                                                           ),
                                                     ),
                                                   ),
+                                                  validator: (value) {
+                                                    if (value!.isEmpty) {
+                                                      return 'Please enter a Title';
+                                                    }
+                                                    return null;
+                                                  },
                                                 ),
-                                                Padding(
-                                                  padding: const EdgeInsets.all(
-                                                    10.0,
-                                                  ),
-                                                  child: TextField(
-                                                    controller:
-                                                        userNameController,
-                                                    decoration: InputDecoration(
-                                                      hintText:
-                                                          "Enter username here",
-                                                      label: const Text(
-                                                        'Username',
-                                                      ),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  11,
-                                                                ),
-                                                          ),
-                                                      enabledBorder:
-                                                          OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  11,
-                                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  10.0,
+                                                ),
+                                                child: TextFormField(
+                                                  controller:
+                                                      userNameController,
+                                                  decoration: InputDecoration(
+                                                    hintText:
+                                                        "Enter title here",
+                                                    labelText: 'Username',
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            11,
                                                           ),
                                                     ),
                                                   ),
+                                                  validator: (value) {
+                                                    if (value!.isEmpty) {
+                                                      return 'Please enter a Username';
+                                                    }
+                                                    return null;
+                                                  },
                                                 ),
-                                                Padding(
-                                                  padding: const EdgeInsets.all(
-                                                    10.0,
-                                                  ),
-                                                  child: TextField(
-                                                    controller:
-                                                        passwordController,
-                                                    decoration: InputDecoration(
-                                                      hintText:
-                                                          "Enter password here",
-                                                      label: const Text(
-                                                        'Password',
-                                                      ),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  11,
-                                                                ),
-                                                          ),
-                                                      enabledBorder:
-                                                          OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  11,
-                                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  10.0,
+                                                ),
+                                                child: TextFormField(
+                                                  controller:
+                                                      passwordController,
+                                                  decoration: InputDecoration(
+                                                    hintText:
+                                                        "Enter password here",
+                                                    labelText: 'Password',
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            11,
                                                           ),
                                                     ),
                                                   ),
+                                                  validator: (value) {
+                                                    if (value!.isEmpty) {
+                                                      return 'Please enter a Password';
+                                                    }
+                                                    return null;
+                                                  },
                                                 ),
-                                                Padding(
-                                                  padding: const EdgeInsets.all(
-                                                    10.0,
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: OutlinedButton(
-                                                          onPressed: () {
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  10.0,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: OutlinedButton(
+                                                        onPressed: () {
+                                                          if (_formKey
+                                                              .currentState!
+                                                              .validate()) {
                                                             var title =
                                                                 titleController
                                                                     .text;
@@ -500,212 +669,136 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 context,
                                                               );
                                                             }
-                                                          },
-                                                          style: OutlinedButton.styleFrom(
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius.circular(
-                                                                    10,
-                                                                  ),
-                                                              side: const BorderSide(
-                                                                width: 1.2,
-                                                                color:
-                                                                    Colors
-                                                                        .black,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          child: const Text(
-                                                            "Update Credential",
+                                                          }
+                                                        },
+                                                        style: OutlinedButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  10,
+                                                                ),
+                                                            side:
+                                                                const BorderSide(
+                                                                  width: 1.2,
+                                                                  color:
+                                                                      Colors
+                                                                          .black,
+                                                                ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      const SizedBox(width: 10),
-                                                      Expanded(
-                                                        child: OutlinedButton(
-                                                          onPressed: () {
-                                                            Navigator.pop(
-                                                              context,
-                                                            );
-                                                          },
-                                                          style: OutlinedButton.styleFrom(
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius.circular(
-                                                                    10,
-                                                                  ),
-                                                              side: const BorderSide(
-                                                                width: 1.2,
-                                                                color:
-                                                                    Colors
-                                                                        .black,
-                                                              ),
-                                                            ), // Added missing parenthesis here
-                                                          ),
-                                                          child: const Text(
-                                                            "Cancel",
-                                                          ),
+                                                        child: const Text(
+                                                          "Update Credential",
                                                         ),
                                                       ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.edit,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(left: 35.0),
-                              child: IconButton(
-                                onPressed:
-                                    () => showDialog<String>(
-                                      context: context,
-                                      builder:
-                                          (BuildContext context) => AlertDialog(
-                                            title: const Text(
-                                              'Confirmation?',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                            content: Text.rich(
-                                              textSpan.TextSpan(
-                                                text:
-                                                    'Are you sure you want to delete ',
-                                                children: [
-                                                  textSpan.TextSpan(
-                                                    text:
-                                                        '${credentials[index][DBHelper.COLUMN_TITLE_NAME]}',
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
                                                     ),
-                                                  ),
-                                                  const textSpan.TextSpan(
-                                                    text: ' Credential?',
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-
-                                            actions: <Widget>[
-                                              TextButton(
-                                                onPressed:
-                                                    () => Navigator.pop(
-                                                      context,
-                                                      'Cancel',
+                                                    const SizedBox(width: 10),
+                                                    Expanded(
+                                                      child: OutlinedButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                            context,
+                                                          );
+                                                        },
+                                                        style: OutlinedButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  10,
+                                                                ),
+                                                            side:
+                                                                const BorderSide(
+                                                                  width: 1.2,
+                                                                  color:
+                                                                      Colors
+                                                                          .black,
+                                                                ),
+                                                          ), // Added missing parenthesis here
+                                                        ),
+                                                        child: const Text(
+                                                          "Cancel",
+                                                        ),
+                                                      ),
                                                     ),
-                                                child: const Text('Cancel'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  dbRef!.deleteCredential(
-                                                    id:
-                                                        credentials[index][DBHelper
-                                                            .COLUMN_CREDENTIAL_ID],
-                                                  );
-                                                  getCredentials();
-                                                  Navigator.pop(context);
-                                                },
-                                                child: const Text(
-                                                  'Delete',
-                                                  style: TextStyle(
-                                                    color: Colors.red,
-                                                  ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
-                                    ),
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Text(
-                                'USERNAME: ${credentials[index][DBHelper.COLUMN_USERNAME]}',
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Tooltip(
-                                message: "Copy Username",
-                                child: IconButton(
-                                  onPressed: () async {
-                                    await Clipboard.setData(
-                                      ClipboardData(
-                                        text:
-                                            credentials[index][DBHelper
-                                                .COLUMN_USERNAME],
-                                      ),
-                                    );
-
-                                    // Show confirmation message
-                                    // ignore: use_build_context_synchronously
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: const Text(
-                                          "Username copied to clipboard!",
                                         ),
-                                        duration: const Duration(seconds: 2),
                                       ),
-                                    );
-                                  },
-                                  icon: const Icon(
-                                    Icons.copy,
-                                    color: Colors.black,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            icon: const Icon(Icons.edit, color: Colors.black),
+                          ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              width: 250,
-                              child: Text(
-                                'PASSWORD: ${isVisible ? credentials[index]["password"] : stars(credentials[index]["password"])}',
-                                style: const TextStyle(fontSize: 18),
-                                overflow: TextOverflow.visible,
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                isVisible
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _visibleIndex = isVisible ? null : index;
-                                });
-                              },
-                            ),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: IconButton(
+                            onPressed:
+                                () => showDialog<String>(
+                                  context: context,
+                                  builder:
+                                      (BuildContext context) => AlertDialog(
+                                        title: const Text(
+                                          'Confirmation?',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                        content: Text.rich(
+                                          textSpan.TextSpan(
+                                            text:
+                                                'Are you sure you want to delete ',
+                                            children: [
+                                              textSpan.TextSpan(
+                                                text:
+                                                    '${credentials[index][DBHelper.COLUMN_TITLE_NAME]}',
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const textSpan.TextSpan(
+                                                text: ' Credential?',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed:
+                                                () => Navigator.pop(
+                                                  context,
+                                                  'Cancel',
+                                                ),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              dbRef!.deleteCredential(
+                                                id:
+                                                    credentials[index][DBHelper
+                                                        .COLUMN_CREDENTIAL_ID],
+                                              );
+                                              getCredentials();
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                ),
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                          ),
                         ),
                       ],
                     ),
