@@ -65,6 +65,36 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  String? _validateTitle(value) {
+    if (value!.isEmpty) {
+      return 'Please enter a Title';
+    }
+    if (value.toString().length > 25) {
+      return 'allows less than 25 chars';
+    }
+    return null;
+  }
+
+  String? _validateUsername(value) {
+    if (value!.isEmpty) {
+      return 'Please enter a Username';
+    }
+    if (value.toString().length > 25) {
+      return 'allows less than 25 chars';
+    }
+    return null;
+  }
+
+  String? _validatePassword(value) {
+    if (value!.isEmpty) {
+      return 'Please enter a Password';
+    }
+    if (value.toString().length > 25) {
+      return 'allows less than 25 chars';
+    }
+    return null;
+  }
+
   Future<void> exportToExcel(List<Map<String, dynamic>> dataList) async {
     var excel = Excel.createExcel();
     Sheet sheet = excel['Sheet1'];
@@ -228,12 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   borderRadius: BorderRadius.circular(11),
                                 ),
                               ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter a Title';
-                                }
-                                return null;
-                              },
+                              validator: _validateTitle,
                             ),
                           ),
                           Padding(
@@ -241,18 +266,13 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: TextFormField(
                               controller: userNameController,
                               decoration: InputDecoration(
-                                hintText: "Enter title here",
-                                labelText: 'Title',
+                                hintText: "Enter Username here",
+                                labelText: 'Username',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(11),
                                 ),
                               ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter a Title';
-                                }
-                                return null;
-                              },
+                              validator: _validateUsername,
                             ),
                           ),
                           Padding(
@@ -260,18 +280,13 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: TextFormField(
                               controller: passwordController,
                               decoration: InputDecoration(
-                                hintText: "Enter title here",
-                                labelText: 'Title',
+                                hintText: "Enter Password here",
+                                labelText: 'Password',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(11),
                                 ),
                               ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Please enter a Title';
-                                }
-                                return null;
-                              },
+                              validator: _validatePassword,
                             ),
                           ),
                           Padding(
@@ -372,20 +387,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         RichText(
+                          //overflow: TextOverflow.ellipsis,
                           text: textSpan.TextSpan(
                             style: const TextStyle(
                               fontSize: 18,
                               color: Colors.black,
                             ),
                             children: [
-                              const textSpan.TextSpan(
+                              textSpan.TextSpan(
                                 text: 'TITLE: ',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               textSpan.TextSpan(
                                 text:
                                     credentials[index][DBHelper
-                                        .COLUMN_TITLE_NAME],
+                                        .COLUMN_TITLE_NAME] ??
+                                    '',
                               ),
                             ],
                           ),
