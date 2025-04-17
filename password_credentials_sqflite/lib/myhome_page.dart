@@ -333,10 +333,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                               borderRadius:
                                                   BorderRadius.circular(25),
                                             ),
-                                            // side: const BorderSide(
-                                            //   //width: 1.2,
-                                            //   color: Colors.black,
-                                            // ),
+                                            side: const BorderSide(
+                                              width: 0,
+                                              color: const Color.fromARGB(
+                                                255,
+                                                252,
+                                                84,
+                                                84,
+                                              ),
+                                            ),
                                           ),
                                           child: const Text(
                                             "CANCEL",
@@ -358,10 +363,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   BorderRadius.circular(25),
                                             ),
                                             backgroundColor: Colors.green,
-                                            // side: const BorderSide(
-                                            //  // width: 1.2,
-                                            //   color: Colors.black,
-                                            // ),
+                                            side: const BorderSide(
+                                              width: 0,
+                                              color: Colors.green,
+                                            ),
                                           ),
                                           child: const Text(
                                             "SAVE",
@@ -620,10 +625,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                           84,
                                                                         ),
                                                                         side: const BorderSide(
-                                                                          width:
-                                                                              1.2,
-                                                                          color:
-                                                                              Colors.black,
+                                                                          color: const Color.fromARGB(
+                                                                            255,
+                                                                            252,
+                                                                            84,
+                                                                            84,
+                                                                          ),
                                                                         ),
                                                                       ),
                                                                       child: const Text(
@@ -695,7 +702,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                           width:
                                                                               1.2,
                                                                           color:
-                                                                              Colors.black,
+                                                                              Colors.green,
                                                                         ),
                                                                       ),
                                                                       child: const Text(
