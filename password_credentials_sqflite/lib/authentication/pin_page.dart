@@ -40,143 +40,109 @@ class _PinPageState extends State<PinPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: MediaQuery.of(context).viewInsets,
-        child: Form(
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Unlock Credentials',
-                    style: TextStyle(fontSize: 30),
-                  ),
-                  const SizedBox(height: 40),
-                  const Text('ENTER PIN', style: TextStyle(fontSize: 15)),
-                  Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(4, (index) {
-                        return SizedBox(
-                          height: 68,
-                          width: 64,
-                          child: Focus(
-                            onKeyEvent: (node, event) {
-                              if (event is KeyDownEvent &&
-                                  event.logicalKey ==
-                                      LogicalKeyboardKey.backspace) {
-                                if (index > 0 &&
-                                    _controllers[index].text.isEmpty) {
-                                  FocusScope.of(
-                                    context,
-                                  ).requestFocus(_focusNodes[index - 1]);
-                                  return KeyEventResult.handled;
-                                }
-                              }
-                              return KeyEventResult.ignored;
-                            },
-                            child: TextField(
-                              controller: _controllers[index],
-                              focusNode: _focusNodes[index],
-                              onChanged: (value) {
-                                if (value.isNotEmpty) {
-                                  if (index < 3) {
-                                    FocusScope.of(
-                                      context,
-                                    ).requestFocus(_focusNodes[index + 1]);
-                                  } else {
-                                    _focusNodes[index].unfocus();
-                                  }
-                                }
-                              },
-                              style: Theme.of(context).textTheme.headlineMedium,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(1),
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                    width: 2,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: Colors.black,
-                                    width: 2,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: Colors.green,
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
+      resizeToAvoidBottomInset: false, // Prevent shifting when keyboard opens
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 200),
+              const Text(
+                'Unlock Credentials',
+                style: TextStyle(fontSize: 30),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 5),
+              const Text(
+                'ENTER PIN',
+                style: TextStyle(fontSize: 15),
+                textAlign: TextAlign.center,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(4, (index) {
+                    return SizedBox(
+                      height: 68,
+                      width: 60,
+                      child: TextField(
+                        controller: _controllers[index],
+                        focusNode: _focusNodes[index],
+                        onChanged: (value) {
+                          if (value.isNotEmpty && index < 3) {
+                            FocusScope.of(
+                              context,
+                            ).requestFocus(_focusNodes[index + 1]);
+                          }
+                        },
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1),
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Colors.grey,
+                              width: 2,
                             ),
                           ),
-                        );
-                      }),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const AuthPage(),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            "CANCEL",
-                            style: TextStyle(fontSize: 20),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Colors.black,
+                              width: 2,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: Colors.green,
+                              width: 2,
+                            ),
                           ),
                         ),
-                        TextButton(
-                          onPressed: _getPinValue,
-                          child: const Text(
-                            "CONFIRM",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
                   TextButton(
                     onPressed: () {
-                      _showHelpSheet();
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => const PinResetPage(),
-                      //   ),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AuthPage(),
+                        ),
+                      );
                     },
+                    child: const Text("CANCEL", style: TextStyle(fontSize: 20)),
+                  ),
+                  TextButton(
+                    onPressed: _getPinValue,
                     child: const Text(
-                      "CREATE/RESET PIN?",
-                      style: TextStyle(fontSize: 20, color: Colors.blue),
+                      "CONFIRM",
+                      style: TextStyle(fontSize: 20),
                     ),
                   ),
-                  const SizedBox(height: 20),
                 ],
               ),
-            ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: _showHelpSheet,
+                child: const Text(
+                  "CREATE/RESET PIN?",
+                  style: TextStyle(fontSize: 20, color: Colors.blue),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -191,16 +157,16 @@ class _PinPageState extends State<PinPage> {
       builder: (_) {
         return Container(
           color: Colors.white,
-          height: 400,
+          height: 340,
           child: Center(
             child: Column(
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 const Text(
                   'Unlock for PIN Set or Reset',
                   style: TextStyle(fontSize: 20),
                 ),
-                const SizedBox(height: 80),
+                const SizedBox(height: 50),
                 IconButton(
                   onPressed: () async {
                     bool check = await AuthService().authenticateLocally();
