@@ -234,7 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
               return StatefulBuilder(
                 builder: (BuildContext context, StateSetter setModalState) {
                   return FractionallySizedBox(
-                    heightFactor: 0.8,
+                    heightFactor: 0.9,
                     child: Container(
                       padding: EdgeInsets.only(
                         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -333,10 +333,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                               borderRadius:
                                                   BorderRadius.circular(25),
                                             ),
-                                            side: const BorderSide(
-                                              width: 1.2,
-                                              color: Colors.black,
-                                            ),
+                                            // side: const BorderSide(
+                                            //   //width: 1.2,
+                                            //   color: Colors.black,
+                                            // ),
                                           ),
                                           child: const Text(
                                             "CANCEL",
@@ -358,10 +358,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   BorderRadius.circular(25),
                                             ),
                                             backgroundColor: Colors.green,
-                                            side: const BorderSide(
-                                              width: 1.2,
-                                              color: Colors.black,
-                                            ),
+                                            // side: const BorderSide(
+                                            //  // width: 1.2,
+                                            //   color: Colors.black,
+                                            // ),
                                           ),
                                           child: const Text(
                                             "SAVE",
@@ -488,7 +488,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             isScrollControlled: true,
                                             builder: (BuildContext context) {
                                               return FractionallySizedBox(
-                                                heightFactor: 0.8,
+                                                heightFactor: 0.9,
                                                 child: Container(
                                                   padding: EdgeInsets.only(
                                                     bottom:
@@ -820,7 +820,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               Row(
                                 children: [
                                   Text(
-                                    'TITLE  ',
+                                    'title  ',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.black,
@@ -935,7 +935,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ],
                               ),
                               Text(
-                                'USERNAME  ',
+                                'username  ',
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
@@ -1018,11 +1018,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ],
                               ),
                               const Text(
-                                'PASSWORD  ',
+                                'password  ',
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 15,
                                   color: Colors.black,
-                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],

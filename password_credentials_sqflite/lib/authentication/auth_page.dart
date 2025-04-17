@@ -27,16 +27,16 @@ class _AuthPageState extends State<AuthPage> {
       builder: (_) {
         return Container(
           color: Colors.white,
-          height: 400,
+          height: 340,
           child: Center(
             child: Column(
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 const Text(
                   'Unlock Credentials',
                   style: TextStyle(fontSize: 20),
                 ),
-                const SizedBox(height: 80),
+                const SizedBox(height: 40),
                 IconButton(
                   onPressed: () async {
                     bool check = await AuthService().authenticateLocally();
@@ -59,7 +59,7 @@ class _AuthPageState extends State<AuthPage> {
                   'Touch the fingerprint icon',
                   style: TextStyle(fontSize: 15),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
                     Navigator.push(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:password_credentials_sqflite/authentication/auth_page.dart';
-import 'package:password_credentials_sqflite/myhome_page.dart';
 
 void main() async {
   runApp(const MyApp());
