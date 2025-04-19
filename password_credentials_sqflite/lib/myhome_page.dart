@@ -16,7 +16,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool _obscureText = true;
+  late bool _obscureText;
+  late bool _obscureTextUpdate;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   int? _visibleIndex;
@@ -227,6 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          _obscureText = true;
           showModalBottomSheet<void>(
             context: context,
             isScrollControlled: true,
@@ -467,6 +469,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     children: [
                                       GestureDetector(
                                         onTap: () {
+                                          _obscureTextUpdate = true;
                                           TextEditingController
                                           titleController =
                                               TextEditingController(
@@ -488,245 +491,269 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     credentials[index][DBHelper
                                                         .COLUMN_PASSWORD],
                                               );
+
                                           showModalBottomSheet<void>(
                                             context: context,
                                             isScrollControlled: true,
                                             builder: (BuildContext context) {
-                                              return FractionallySizedBox(
-                                                heightFactor: 0.9,
-                                                child: Container(
-                                                  padding: EdgeInsets.only(
-                                                    bottom:
-                                                        MediaQuery.of(
-                                                          context,
-                                                        ).viewInsets.bottom,
-                                                  ),
-                                                  child: Form(
-                                                    key: _formKey,
-                                                    child: Center(
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets.all(
-                                                              10.0,
-                                                            ),
-                                                        child: Column(
-                                                          children: <Widget>[
-                                                            const Padding(
-                                                              padding:
-                                                                  EdgeInsets.all(
-                                                                    8.0,
-                                                                  ),
-                                                              child: Text(
-                                                                'Update Credential',
-                                                                style: TextStyle(
-                                                                  fontSize: 20,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
+                                              return StatefulBuilder(
+                                                builder: (
+                                                  BuildContext context,
+                                                  StateSetter setModalState,
+                                                ) {
+                                                  return FractionallySizedBox(
+                                                    heightFactor: 0.9,
+                                                    child: Container(
+                                                      padding: EdgeInsets.only(
+                                                        bottom:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).viewInsets.bottom,
+                                                      ),
+                                                      child: Form(
+                                                        key: _formKey,
+                                                        child: Center(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets.all(
+                                                                  10.0,
                                                                 ),
-                                                              ),
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets.all(
-                                                                    10.0,
-                                                                  ),
-                                                              child: TextFormField(
-                                                                controller:
-                                                                    titleController,
-                                                                decoration: InputDecoration(
-                                                                  hintText:
-                                                                      "Enter title here",
-                                                                  labelText:
-                                                                      'Title',
-                                                                  border: OutlineInputBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                          11,
-                                                                        ),
-                                                                  ),
-                                                                ),
-                                                                validator:
-                                                                    _validateTitle,
-                                                              ),
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets.all(
-                                                                    10.0,
-                                                                  ),
-                                                              child: TextFormField(
-                                                                controller:
-                                                                    userNameController,
-                                                                decoration: InputDecoration(
-                                                                  hintText:
-                                                                      "Enter username here",
-                                                                  labelText:
-                                                                      'Username',
-                                                                  border: OutlineInputBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                          11,
-                                                                        ),
-                                                                  ),
-                                                                ),
-                                                                validator:
-                                                                    _validateUsername,
-                                                              ),
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets.all(
-                                                                    10.0,
-                                                                  ),
-                                                              child: TextFormField(
-                                                                controller:
-                                                                    passwordController,
-                                                                decoration: InputDecoration(
-                                                                  hintText:
-                                                                      "Enter password here",
-                                                                  labelText:
-                                                                      'Password',
-                                                                  border: OutlineInputBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                          11,
-                                                                        ),
-                                                                  ),
-                                                                ),
-                                                                validator:
-                                                                    _validatePassword,
-                                                              ),
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets.all(
-                                                                    10.0,
-                                                                  ),
-                                                              child: Row(
-                                                                children: [
-                                                                  Expanded(
-                                                                    child: OutlinedButton(
-                                                                      onPressed: () {
-                                                                        Navigator.pop(
-                                                                          context,
-                                                                        );
-                                                                      },
-                                                                      style: OutlinedButton.styleFrom(
-                                                                        shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                            25,
-                                                                          ),
-                                                                        ),
-                                                                        backgroundColor: const Color.fromARGB(
-                                                                          255,
-                                                                          252,
-                                                                          84,
-                                                                          84,
-                                                                        ),
-                                                                        side: const BorderSide(
-                                                                          color: const Color.fromARGB(
-                                                                            255,
-                                                                            252,
-                                                                            84,
-                                                                            84,
-                                                                          ),
-                                                                        ),
+                                                            child: Column(
+                                                              children: <
+                                                                Widget
+                                                              >[
+                                                                const Padding(
+                                                                  padding:
+                                                                      EdgeInsets.all(
+                                                                        8.0,
                                                                       ),
-                                                                      child: const Text(
-                                                                        "Cancel",
-                                                                        style: TextStyle(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          fontSize:
-                                                                              16,
-                                                                        ),
-                                                                      ),
+                                                                  child: Text(
+                                                                    'Update Credential',
+                                                                    style: TextStyle(
+                                                                      fontSize:
+                                                                          20,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
                                                                     ),
                                                                   ),
-                                                                  const SizedBox(
-                                                                    width: 10,
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets.all(
+                                                                        10.0,
+                                                                      ),
+                                                                  child: TextFormField(
+                                                                    controller:
+                                                                        titleController,
+                                                                    decoration: InputDecoration(
+                                                                      hintText:
+                                                                          "Enter title here",
+                                                                      labelText:
+                                                                          'Title',
+                                                                      border: OutlineInputBorder(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                              11,
+                                                                            ),
+                                                                      ),
+                                                                    ),
+                                                                    validator:
+                                                                        _validateTitle,
                                                                   ),
-                                                                  Expanded(
-                                                                    child: OutlinedButton(
-                                                                      onPressed: () {
-                                                                        if (_formKey
-                                                                            .currentState!
-                                                                            .validate()) {
-                                                                          var title =
-                                                                              titleController.text;
-                                                                          var userName =
-                                                                              userNameController.text;
-                                                                          var password =
-                                                                              passwordController.text;
-                                                                          if (title.isNotEmpty &&
-                                                                              userName.isNotEmpty &&
-                                                                              password.isNotEmpty) {
-                                                                            dbRef!.updateCredential(
-                                                                              id:
-                                                                                  credentials[index][DBHelper.COLUMN_CREDENTIAL_ID],
-                                                                              mTitle:
-                                                                                  title,
-                                                                              mUserName:
-                                                                                  userName,
-                                                                              mPassword:
-                                                                                  password,
-                                                                            );
-                                                                            setState(
-                                                                              () {},
-                                                                            );
-                                                                            titleController.text =
-                                                                                '';
-                                                                            userNameController.text =
-                                                                                '';
-                                                                            passwordController.text =
-                                                                                '';
-                                                                            getCredentials();
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets.all(
+                                                                        10.0,
+                                                                      ),
+                                                                  child: TextFormField(
+                                                                    controller:
+                                                                        userNameController,
+                                                                    decoration: InputDecoration(
+                                                                      hintText:
+                                                                          "Enter username here",
+                                                                      labelText:
+                                                                          'Username',
+                                                                      border: OutlineInputBorder(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                              11,
+                                                                            ),
+                                                                      ),
+                                                                    ),
+                                                                    validator:
+                                                                        _validateUsername,
+                                                                  ),
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets.all(
+                                                                        10.0,
+                                                                      ),
+                                                                  child: TextFormField(
+                                                                    obscureText:
+                                                                        _obscureTextUpdate,
+                                                                    obscuringCharacter:
+                                                                        '*',
+                                                                    controller:
+                                                                        passwordController,
+                                                                    decoration: InputDecoration(
+                                                                      hintText:
+                                                                          "Enter Password here",
+                                                                      labelText:
+                                                                          'Password',
+                                                                      border: OutlineInputBorder(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                              11,
+                                                                            ),
+                                                                      ),
+                                                                      suffixIcon: IconButton(
+                                                                        icon: Icon(
+                                                                          _obscureTextUpdate
+                                                                              ? Icons.visibility_off
+                                                                              : Icons.visibility,
+                                                                        ),
+                                                                        onPressed: () {
+                                                                          setModalState(() {
+                                                                            _obscureTextUpdate =
+                                                                                !_obscureTextUpdate;
+                                                                          });
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                    validator:
+                                                                        _validatePassword,
+                                                                  ),
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets.all(
+                                                                        10.0,
+                                                                      ),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child: OutlinedButton(
+                                                                          onPressed: () {
                                                                             Navigator.pop(
                                                                               context,
                                                                             );
-                                                                          }
-                                                                        }
-                                                                      },
-                                                                      style: OutlinedButton.styleFrom(
-                                                                        shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                            25,
+                                                                          },
+                                                                          style: OutlinedButton.styleFrom(
+                                                                            shape: RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.circular(
+                                                                                25,
+                                                                              ),
+                                                                            ),
+                                                                            backgroundColor: const Color.fromARGB(
+                                                                              255,
+                                                                              252,
+                                                                              84,
+                                                                              84,
+                                                                            ),
+                                                                            side: const BorderSide(
+                                                                              color: const Color.fromARGB(
+                                                                                255,
+                                                                                252,
+                                                                                84,
+                                                                                84,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          child: const Text(
+                                                                            "Cancel",
+                                                                            style: TextStyle(
+                                                                              color:
+                                                                                  Colors.white,
+                                                                              fontWeight:
+                                                                                  FontWeight.bold,
+                                                                              fontSize:
+                                                                                  16,
+                                                                            ),
                                                                           ),
                                                                         ),
-                                                                        backgroundColor:
-                                                                            Colors.green,
-                                                                        side: const BorderSide(
-                                                                          width:
-                                                                              1.2,
-                                                                          color:
-                                                                              Colors.green,
+                                                                      ),
+                                                                      const SizedBox(
+                                                                        width:
+                                                                            10,
+                                                                      ),
+                                                                      Expanded(
+                                                                        child: OutlinedButton(
+                                                                          onPressed: () {
+                                                                            if (_formKey.currentState!.validate()) {
+                                                                              var title =
+                                                                                  titleController.text;
+                                                                              var userName =
+                                                                                  userNameController.text;
+                                                                              var password =
+                                                                                  passwordController.text;
+                                                                              if (title.isNotEmpty &&
+                                                                                  userName.isNotEmpty &&
+                                                                                  password.isNotEmpty) {
+                                                                                dbRef!.updateCredential(
+                                                                                  id:
+                                                                                      credentials[index][DBHelper.COLUMN_CREDENTIAL_ID],
+                                                                                  mTitle:
+                                                                                      title,
+                                                                                  mUserName:
+                                                                                      userName,
+                                                                                  mPassword:
+                                                                                      password,
+                                                                                );
+                                                                                setState(
+                                                                                  () {},
+                                                                                );
+                                                                                titleController.text = '';
+                                                                                userNameController.text = '';
+                                                                                passwordController.text = '';
+                                                                                getCredentials();
+                                                                                Navigator.pop(
+                                                                                  context,
+                                                                                );
+                                                                              }
+                                                                            }
+                                                                          },
+                                                                          style: OutlinedButton.styleFrom(
+                                                                            shape: RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.circular(
+                                                                                25,
+                                                                              ),
+                                                                            ),
+                                                                            backgroundColor:
+                                                                                Colors.green,
+                                                                            side: const BorderSide(
+                                                                              width:
+                                                                                  1.2,
+                                                                              color:
+                                                                                  Colors.green,
+                                                                            ),
+                                                                          ),
+                                                                          child: const Text(
+                                                                            "Update",
+                                                                            style: TextStyle(
+                                                                              color:
+                                                                                  Colors.white,
+                                                                              fontWeight:
+                                                                                  FontWeight.bold,
+                                                                              fontSize:
+                                                                                  16,
+                                                                            ),
+                                                                          ),
                                                                         ),
                                                                       ),
-                                                                      child: const Text(
-                                                                        "Update",
-                                                                        style: TextStyle(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          fontSize:
-                                                                              16,
-                                                                        ),
-                                                                      ),
-                                                                    ),
+                                                                    ],
                                                                   ),
-                                                                ],
-                                                              ),
+                                                                ),
+                                                              ],
                                                             ),
-                                                          ],
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ),
+                                                  );
+                                                },
                                               );
                                             },
                                           );
