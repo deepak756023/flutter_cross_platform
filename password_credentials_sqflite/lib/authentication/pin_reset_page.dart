@@ -47,10 +47,14 @@ class _PinResetPageState extends State<PinResetPage> {
                 children: [
                   const SizedBox(height: 100),
                   const Text('Reset/Set Pin', style: TextStyle(fontSize: 30)),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   const Text('ENTER PIN', style: TextStyle(fontSize: 15)),
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      bottom: 5,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(4, (index) {
@@ -110,7 +114,11 @@ class _PinResetPageState extends State<PinResetPage> {
                   const SizedBox(height: 10),
                   const Text('RE-ENTER PIN', style: TextStyle(fontSize: 15)),
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      bottom: 5,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(4, (index) {
@@ -172,8 +180,8 @@ class _PinResetPageState extends State<PinResetPage> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 10,
+                horizontal: 10.0,
+                vertical: 5,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -210,12 +218,14 @@ class _PinResetPageState extends State<PinResetPage> {
     if (pin.length < 4 || confirmPin.length < 4) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
+          margin: const EdgeInsets.only(bottom: 280),
           content: Text("Please enter all 4 digits in both fields"),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
+          duration: const Duration(seconds: 1),
         ),
       );
       return;
@@ -225,12 +235,14 @@ class _PinResetPageState extends State<PinResetPage> {
     if (pin != confirmPin) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
+          margin: const EdgeInsets.only(bottom: 280),
           content: Text("PINs do not match"),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
+          duration: const Duration(seconds: 1),
         ),
       );
       return;

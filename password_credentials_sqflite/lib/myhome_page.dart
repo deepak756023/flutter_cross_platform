@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:excel/excel.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:flutter/src/painting/text_span.dart' as textSpan;
+import 'package:intl/intl.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -126,10 +127,14 @@ class _MyHomePageState extends State<MyHomePage> {
     List<int>? fileBytes = excel.encode();
     if (fileBytes != null) {
       Directory directory = Directory('/storage/emulated/0/Download');
-      String filePath = '${directory.path}/password_credentials.xlsx';
+      final String timestamp = DateFormat(
+        'yyyyMMdd_HHmmss',
+      ).format(DateTime.now());
+      String filePath =
+          '${directory.path}/password_credentials_$timestamp.xlsx';
 
       File file = File(filePath);
-      await file.writeAsBytes(fileBytes);
+      await file.writeAsBytes(fileBytes, flush: true);
 
       print('Excel file saved at: $filePath');
       await OpenFilex.open(filePath); // Open file

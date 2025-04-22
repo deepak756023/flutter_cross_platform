@@ -14,22 +14,7 @@ class PinPage extends StatefulWidget {
 }
 
 class _PinPageState extends State<PinPage> {
-  String? authCode;
   DBHelper? dbRef;
-
-  @override
-  void initState() {
-    super.initState();
-    dbRef = DBHelper.getInstance;
-    getCode();
-  }
-
-  Future<void> getCode() async {
-    if (dbRef != null) {
-      authCode = await dbRef!.getAuthCode();
-      print("Fetched Auth Code: $authCode");
-    }
-  }
 
   final List<TextEditingController> _controllers = List.generate(
     4,
@@ -38,16 +23,22 @@ class _PinPageState extends State<PinPage> {
   final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
 
   @override
+  void initState() {
+    super.initState();
+    dbRef = DBHelper.getInstance;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Prevent shifting when keyboard opens
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 200),
+              const SizedBox(height: 130),
               const Text(
                 'Unlock Credentials',
                 style: TextStyle(fontSize: 30),
@@ -134,7 +125,7 @@ class _PinPageState extends State<PinPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               TextButton(
                 onPressed: _showHelpSheet,
                 child: const Text(
@@ -177,7 +168,11 @@ class _PinPageState extends State<PinPage> {
                       );
                     }
                   },
-                  icon: Icon(Icons.fingerprint, size: 80, color: Colors.blue),
+                  icon: const Icon(
+                    Icons.fingerprint,
+                    size: 80,
+                    color: Colors.blue,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 const Text(
@@ -193,52 +188,40 @@ class _PinPageState extends State<PinPage> {
   }
 
   void _getPinValue() async {
-    await getCode();
+    String? code = await dbRef?.getAuthCode();
     String pin = _controllers.map((controller) => controller.text).join();
-    if (authCode!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please Set the PIN for First Time"),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-        ),
-      );
+
+    if (code == null || code.isEmpty) {
+      _showSnackBar("Please Set the PIN for First Time");
       return;
     }
 
     if (pin.length < 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please enter all 4 digits"),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-        ),
-      );
+      _showSnackBar("Please enter all 4 digits");
       return;
     }
-    if (authCode != pin) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Wrong Pin"),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-        ),
-      );
+
+    if (code != pin) {
+      _showSnackBar("Wrong Pin");
       return;
     }
 
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const MyHomePage()),
+    );
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        margin: const EdgeInsets.only(bottom: 280),
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: const Duration(seconds: 1),
+      ),
     );
   }
 }
