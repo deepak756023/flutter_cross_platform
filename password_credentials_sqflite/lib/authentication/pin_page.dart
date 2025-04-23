@@ -145,7 +145,7 @@ class _PinPageState extends State<PinPage> {
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        margin: const EdgeInsets.only(bottom: 300),
+        margin: const EdgeInsets.only(bottom: 50),
         content: Text(message),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,

@@ -126,7 +126,7 @@ class _PinResetPageState extends State<PinResetPage> {
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        margin: const EdgeInsets.only(bottom: 280),
+        margin: const EdgeInsets.only(bottom: 50),
         content: Text(message),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
