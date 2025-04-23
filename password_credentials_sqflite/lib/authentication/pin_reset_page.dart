@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pinput/pinput.dart';
 import 'package:password_credentials_sqflite/authentication/pin_page.dart';
 import 'package:password_credentials_sqflite/data/local/db_helper.dart';
 
@@ -12,6 +13,8 @@ class PinResetPage extends StatefulWidget {
 
 class _PinResetPageState extends State<PinResetPage> {
   DBHelper? dbRef;
+  final TextEditingController _pinController = TextEditingController();
+  final TextEditingController _confirmPinController = TextEditingController();
 
   @override
   void initState() {
@@ -19,186 +22,75 @@ class _PinResetPageState extends State<PinResetPage> {
     dbRef = DBHelper.getInstance;
   }
 
-  final List<TextEditingController> _controllers = List.generate(
-    4,
-    (index) => TextEditingController(),
-  );
-  final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
-
-  final List<TextEditingController> _againController = List.generate(
-    4,
-    (index) => TextEditingController(),
-  );
-  final List<FocusNode> _againFocusNodes = List.generate(
-    4,
-    (index) => FocusNode(),
-  );
-
   @override
   Widget build(BuildContext context) {
+    final pinTheme = PinTheme(
+      width: 64,
+      height: 68,
+      textStyle: const TextStyle(fontSize: 24),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black, width: 2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+    );
+
+    final focusedPinTheme = pinTheme.copyWith(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.green, width: 2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           children: [
-            Form(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 100),
-                  const Text('Reset/Set Pin', style: TextStyle(fontSize: 30)),
-                  const SizedBox(height: 5),
-                  const Text('ENTER PIN', style: TextStyle(fontSize: 15)),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      bottom: 5,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(4, (index) {
-                        return SizedBox(
-                          height: 68,
-                          width: 64,
-                          child: TextField(
-                            controller: _controllers[index],
-                            focusNode: _focusNodes[index],
-                            onChanged: (value) {
-                              if (value.isNotEmpty) {
-                                if (index < 3) {
-                                  FocusScope.of(
-                                    context,
-                                  ).requestFocus(_focusNodes[index + 1]);
-                                } else {
-                                  _focusNodes[index].unfocus();
-                                }
-                              }
-                              setState(() {});
-                            },
-                            style: Theme.of(context).textTheme.headlineMedium,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                  color: Colors.grey,
-                                  width: 2,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(
-                                  color: Colors.green,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text('RE-ENTER PIN', style: TextStyle(fontSize: 15)),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      bottom: 5,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(4, (index) {
-                        return SizedBox(
-                          height: 68,
-                          width: 64,
-                          child: TextField(
-                            controller: _againController[index],
-                            focusNode: _againFocusNodes[index],
-                            onChanged: (value) {
-                              if (value.isNotEmpty) {
-                                if (index < 3) {
-                                  FocusScope.of(
-                                    context,
-                                  ).requestFocus(_againFocusNodes[index + 1]);
-                                } else {
-                                  _againFocusNodes[index].unfocus();
-                                }
-                              }
-                              setState(() {});
-                            },
-                            style: Theme.of(context).textTheme.headlineMedium,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                  color: Colors.grey,
-                                  width: 2,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(
-                                  color: Colors.green,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 100),
+            const Text('Reset/Set Pin', style: TextStyle(fontSize: 30)),
+            const SizedBox(height: 5),
+            const Text('ENTER PIN', style: TextStyle(fontSize: 15)),
+            const SizedBox(height: 10),
+            Pinput(
+              controller: _pinController,
+              length: 4,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              defaultPinTheme: pinTheme,
+              focusedPinTheme: focusedPinTheme,
+              separatorBuilder: (index) => const SizedBox(width: 16),
             ),
+            const SizedBox(height: 20),
+            const Text('RE-ENTER PIN', style: TextStyle(fontSize: 15)),
+            const SizedBox(height: 10),
+            Pinput(
+              controller: _confirmPinController,
+              length: 4,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              defaultPinTheme: pinTheme,
+              focusedPinTheme: focusedPinTheme,
+              separatorBuilder: (index) => const SizedBox(width: 16),
+            ),
+            const SizedBox(height: 30),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10.0,
-                vertical: 5,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => PinPage()),
+                        MaterialPageRoute(
+                          builder: (context) => const PinPage(),
+                        ),
                       );
                     },
                     child: const Text("CANCEL", style: TextStyle(fontSize: 20)),
                   ),
                   TextButton(
-                    onPressed: () {
-                      _matchAndInputValidationPinValues();
-                    },
+                    onPressed: _matchAndInputValidationPinValues,
                     child: const Text("SAVE", style: TextStyle(fontSize: 20)),
                   ),
                 ],
@@ -211,52 +103,36 @@ class _PinResetPageState extends State<PinResetPage> {
   }
 
   void _matchAndInputValidationPinValues() {
-    String pin = _controllers.map((c) => c.text).join();
-    String confirmPin = _againController.map((c) => c.text).join();
+    String pin = _pinController.text;
+    String confirmPin = _confirmPinController.text;
 
-    // Validation for incomplete PINs
     if (pin.length < 4 || confirmPin.length < 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          margin: const EdgeInsets.only(bottom: 280),
-          content: Text("Please enter all 4 digits in both fields"),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          duration: const Duration(seconds: 1),
-        ),
-      );
+      _showSnackBar("Please enter all 4 digits in both fields");
       return;
     }
 
-    // Validation for mismatched PINs
     if (pin != confirmPin) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          margin: const EdgeInsets.only(bottom: 280),
-          content: Text("PINs do not match"),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          duration: const Duration(seconds: 1),
-        ),
-      );
+      _showSnackBar("PINs do not match");
       return;
     }
 
-    // code = int.parse(pin);
     dbRef?.saveAuthCode(pin);
-
-    // If validation passes, navigate
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const PinPage()),
     );
+  }
 
-    setState(() {});
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        margin: const EdgeInsets.only(bottom: 280),
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: const Duration(seconds: 1),
+      ),
+    );
   }
 }

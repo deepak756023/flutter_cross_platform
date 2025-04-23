@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pinput/pinput.dart';
 import 'package:password_credentials_sqflite/authentication/auth_page.dart';
 import 'package:password_credentials_sqflite/authentication/auth_service.dart';
 import 'package:password_credentials_sqflite/authentication/pin_reset_page.dart';
@@ -15,12 +16,7 @@ class PinPage extends StatefulWidget {
 
 class _PinPageState extends State<PinPage> {
   DBHelper? dbRef;
-
-  final List<TextEditingController> _controllers = List.generate(
-    4,
-    (_) => TextEditingController(),
-  );
-  final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
+  final TextEditingController _pinController = TextEditingController();
 
   @override
   void initState() {
@@ -50,80 +46,61 @@ class _PinPageState extends State<PinPage> {
                 style: TextStyle(fontSize: 15),
                 textAlign: TextAlign.center,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(4, (index) {
-                    return SizedBox(
-                      height: 68,
-                      width: 60,
-                      child: TextField(
-                        controller: _controllers[index],
-                        focusNode: _focusNodes[index],
-                        onChanged: (value) {
-                          if (value.isNotEmpty && index < 3) {
-                            FocusScope.of(
-                              context,
-                            ).requestFocus(_focusNodes[index + 1]);
-                          }
-                        },
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(1),
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 2,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Colors.black,
-                              width: 2,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.green,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
+              const SizedBox(height: 20),
+              Pinput(
+                controller: _pinController,
+                length: 4,
+                defaultPinTheme: PinTheme(
+                  width: 60,
+                  height: 68,
+                  textStyle: const TextStyle(fontSize: 24),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black, width: 2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
+                focusedPinTheme: PinTheme(
+                  width: 60,
+                  height: 68,
+                  textStyle: const TextStyle(fontSize: 24),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.green, width: 2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                separatorBuilder: (index) => const SizedBox(width: 16),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AuthPage(),
-                        ),
-                      );
-                    },
-                    child: const Text("CANCEL", style: TextStyle(fontSize: 20)),
-                  ),
-                  TextButton(
-                    onPressed: _getPinValue,
-                    child: const Text(
-                      "CONFIRM",
-                      style: TextStyle(fontSize: 20),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AuthPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "CANCEL",
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
-                  ),
-                ],
+                    TextButton(
+                      onPressed: _getPinValue,
+                      child: const Text(
+                        "CONFIRM",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 5),
               TextButton(
@@ -136,6 +113,44 @@ class _PinPageState extends State<PinPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _getPinValue() async {
+    String? code = await dbRef?.getAuthCode();
+    String pin = _pinController.text;
+
+    if (code == null || code.isEmpty) {
+      _showSnackBar("Please Set the PIN for First Time");
+      return;
+    }
+
+    if (pin.length < 4) {
+      _showSnackBar("Please enter all 4 digits");
+      return;
+    }
+
+    if (code != pin) {
+      _showSnackBar("Wrong Pin");
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MyHomePage()),
+    );
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        margin: const EdgeInsets.only(bottom: 300),
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: const Duration(seconds: 1),
       ),
     );
   }
@@ -184,44 +199,6 @@ class _PinPageState extends State<PinPage> {
           ),
         );
       },
-    );
-  }
-
-  void _getPinValue() async {
-    String? code = await dbRef?.getAuthCode();
-    String pin = _controllers.map((controller) => controller.text).join();
-
-    if (code == null || code.isEmpty) {
-      _showSnackBar("Please Set the PIN for First Time");
-      return;
-    }
-
-    if (pin.length < 4) {
-      _showSnackBar("Please enter all 4 digits");
-      return;
-    }
-
-    if (code != pin) {
-      _showSnackBar("Wrong Pin");
-      return;
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const MyHomePage()),
-    );
-  }
-
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        margin: const EdgeInsets.only(bottom: 280),
-        content: Text(message),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        duration: const Duration(seconds: 1),
-      ),
     );
   }
 }
