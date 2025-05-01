@@ -1049,8 +1049,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     },
                                     child: Icon(
                                       isVisible
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
                                       color: Colors.black,
                                     ),
                                   ),
